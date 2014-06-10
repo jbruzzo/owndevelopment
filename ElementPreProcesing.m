@@ -1,7 +1,6 @@
 % Preprocesing the fem element: Drawing the part and extracting the
 % constraint modes.
 
-% I added this line here
 
 % 
 clear all
@@ -153,27 +152,55 @@ end
 vcount = 1;    % Interface node counters.
 kcount = 1;
 
-Knew = zeros(3*length(nodes));
+Knew1 = zeros(3*length(nodes));
+Knew2 = zeros(3*length(nodes));
+Knew3 = zeros(3*length(nodes));
+Knew4 = zeros(3*length(nodes));
 
-for i = 1:length(nodes(:,1))
-    for j = 1:length(VecOrderFinal(:,1))
-        if nodes(i,1) == VecOrderFinal(j,1)
-           Knew((3*kcount-2):3*kcount,:) = Kfem((3*VecOrderFinal(j,1)-2):3*VecOrderFinal(j,1),:);
-           Knew(:,(3*kcount-2):3*kcount) = Kfem(:,(3*VecOrderFinal(j,1)-2):3*VecOrderFinal(j,1));
-           
-            
-            kcount = kcount + 1;
-            vcount = vcount + 1;
-        end
-    end
+
+
+
+for i = 1:length(VecOrderFinal(:,1))
+    
+    % Reordenando todas las filas
+    Knew1(3*i-2:3*i,:) = Kfem(3*VecOrderFinal(i,1)-2:3*VecOrderFinal(i,1),:);
+    
 end
+
+
+for i = 1:length(VecOrderFinal(:,1))
+    
+    % Reordenando todas las columnas.
+    Knew2(:,3*i-2:3*i) = Knew1(:,3*VecOrderFinal(i,1)-2:3*VecOrderFinal(i,1),:);
+    
+end
+
+
+
+
+
+
+% This part was the one previously working.
+
+% for i = 1:length(nodes(:,1))
+%     for j = 1:length(VecOrderFinal(:,1))
+%         if nodes(i,1) == VecOrderFinal(j,1)
+%            Knew((3*kcount-2):3*kcount,:) = Kfem((3*VecOrderFinal(j,1)-2):3*VecOrderFinal(j,1),:);
+%            Knew(:,(3*kcount-2):3*kcount) = Kfem(:,(3*VecOrderFinal(j,1)-2):3*VecOrderFinal(j,1));
+%            
+%             
+%             kcount = kcount + 1;
+%             vcount = vcount + 1;
+%         end
+%     end
+% end
 
 
 % for i = 1:length(VecOrder(:,1))
 %     Kfem2(3*VecOrder(i,1)-2:3*VecOrder(i,1),:) = [];
 % end
 % 
-K = Knew;  % Rearranged stifness matrix.
+K = Knew2;  % Rearranged stifness matrix.
 
 
 % Constraint mode V1
@@ -303,16 +330,16 @@ end
 
 %%
 
-clear all
-close all
-clc
-
-
+% % % clear all
+% % % close all
+% % % clc
+% % % 
+% % % 
 elems =  load('ELIST.txt');
 load('nodes.txt'); 
  elems(:,2:6) = [];
 
-load('V2_2.txt'); 
+%load('V2_2.txt'); 
 
 nodes_def = zeros(size(nodes,1),4);
 
@@ -322,7 +349,9 @@ nodes_def(:,1) = nodes(:,1);
 
 scaleFact = 0.1;
 
-nodes_def(:,2:4) = nodes(:,2:4) + V2_2(:,3:5)*scaleFact;  
+
+nodes_def(:,2:4) = NodeSort(:,2:4); 
+%nodes_def(:,2:4) = nodes(:,2:4) + V2_2(:,3:5)*scaleFact;   % Para ser usado con los modos extraidos de Ansys.  
 %nodes = NodeSort; 
 % %%
 figure(1)
