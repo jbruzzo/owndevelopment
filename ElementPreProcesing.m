@@ -9,36 +9,6 @@ clc
 
 % Location of the nodes
 
-% Interface node p.
-
-% ^
-% | y
-%     -> z
-
-% 2094 2095   2   4   3
-  
-% 1452 1453   1   6   5
-
-% 1450 1451 968 969 967
-
-
-
-% Interface node q.
-
-%       ^
-%       | y
-% <- Z
-
-
-
-%   9  10   8 2097 2096
-
-%  11  12   7 1457 1456
-
-% 970 972 971 1455 1454
-
-
-
 
 
  load('nodes.txt');
@@ -46,9 +16,7 @@ clc
  Mfem = load('Mass_M.dat');
  
  
- %[V,D] = eig(Kfem,Mfem);
- 
- 
+
 
 % Detecting the nodes on the interfaces...
 
@@ -80,7 +48,7 @@ end
 
 
 
-clear Knew Kfem2
+%clear Knew Kfem2
 
 Kfem2 = Kfem;
 
@@ -92,8 +60,7 @@ Knew = zeros(3*length(nodes));
 for i = 1:length(nodes(:,1))
     for j = 1:length(inter_p(:,1))
         if nodes(i,1) == inter_p(j,1)
-           % Knew((3*kcount-2):3*kcount,:) = Kfem((3*inter_p(j,1)-2):3*inter_p(j,1),:);
-            %Knew(:,(3*kcount-2):3*kcount) = Kfem(:,(3*inter_p(j,1)-2):3*inter_p(j,1));
+
             VecOrder(kcount,1) = nodes(i,1);
             
             kcount = kcount + 1;
@@ -105,8 +72,7 @@ end
 for i = 1:length(nodes(:,1))
     for j = 1:length(inter_q(:,1))
         if nodes(i,1) == inter_q(j,1)
-            %Knew((3*kcount-2):3*kcount,:) = Kfem((3*inter_q(j,1)-2):3*inter_q(j,1),:);
-            %Knew(:,(3*kcount-2):3*kcount) = Kfem(:,(3*inter_q(j,1)-2):3*inter_q(j,1));
+
             VecOrder(kcount,1) = nodes(i,1);
             
             kcount = kcount + 1;
@@ -149,13 +115,12 @@ end
 
 
 
-vcount = 1;    % Interface node counters.
-kcount = 1;
+%vcount = 1;    % Interface node counters.
+%kcount = 1;
 
 Knew1 = zeros(3*length(nodes));
 Knew2 = zeros(3*length(nodes));
-Knew3 = zeros(3*length(nodes));
-Knew4 = zeros(3*length(nodes));
+
 
 
 
@@ -177,29 +142,6 @@ end
 
 
 
-
-
-
-% This part was the one previously working.
-
-% for i = 1:length(nodes(:,1))
-%     for j = 1:length(VecOrderFinal(:,1))
-%         if nodes(i,1) == VecOrderFinal(j,1)
-%            Knew((3*kcount-2):3*kcount,:) = Kfem((3*VecOrderFinal(j,1)-2):3*VecOrderFinal(j,1),:);
-%            Knew(:,(3*kcount-2):3*kcount) = Kfem(:,(3*VecOrderFinal(j,1)-2):3*VecOrderFinal(j,1));
-%            
-%             
-%             kcount = kcount + 1;
-%             vcount = vcount + 1;
-%         end
-%     end
-% end
-
-
-% for i = 1:length(VecOrder(:,1))
-%     Kfem2(3*VecOrder(i,1)-2:3*VecOrder(i,1),:) = [];
-% end
-% 
 K = Knew2;  % Rearranged stifness matrix.
 
 
@@ -335,22 +277,20 @@ end
 % % % clc
 % % % 
 % % % 
-elems =  load('ELIST.txt');
-load('nodes.txt'); 
+elems =  load('ELIST.txt');   % Esto se necesita para saber los nodos que conforman un elemento.
+load('nodes.txt');            % Posicion inicial de los nodos.
  elems(:,2:6) = [];
 
 %load('V2_2.txt'); 
 
 nodes_def = zeros(size(nodes,1),4);
 
-nodes_def(:,1) = nodes(:,1);
-
-
-
-scaleFact = 0.1;
+nodes_def(:,1) = nodes(:,1);  %No se si este paso es necesario.
 
 
 nodes_def(:,2:4) = NodeSort(:,2:4); 
+
+%scaleFact = 0.1;
 %nodes_def(:,2:4) = nodes(:,2:4) + V2_2(:,3:5)*scaleFact;   % Para ser usado con los modos extraidos de Ansys.  
 %nodes = NodeSort; 
 % %%
@@ -365,8 +305,8 @@ for i = 1:size(elems,1)
         plot3([node_ini(1,1) node_fin(1,1)],[node_ini(1,2) node_fin(1,2)],[node_ini(1,3) node_fin(1,3)])
         hold on
         
-        node_ini = nodes(elems(i,j+5),2:4); elems(i,j+1)
-        node_fin = nodes(elems(i,j+6),2:4); elems(i,j+2)
+        node_ini = nodes(elems(i,j+5),2:4); elems(i,j+1);
+        node_fin = nodes(elems(i,j+6),2:4); elems(i,j+2);
         
         plot3([node_ini(1,1) node_fin(1,1)],[node_ini(1,2) node_fin(1,2)],[node_ini(1,3) node_fin(1,3)])
         
