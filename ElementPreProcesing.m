@@ -148,7 +148,7 @@ end
 K = Knew2;  % Rearranged stifness matrix.
 
 ScaleFactor = 0.07;
-modecal = 2;
+modecal = 7;
 
 switch modecal
     
@@ -1143,7 +1143,7 @@ elems =  load('ELIST.txt');   % Esto se necesita para saber los nodos que confor
 load('nodes.txt');            % Posicion inicial de los nodos.
  elems(:,2:6) = [];
 
-load('V5_2.txt'); 
+%load('V5_2.txt'); 
 
 nodes_def = zeros(size(nodes,1),4);
 
