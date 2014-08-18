@@ -14,8 +14,8 @@ clc
  %Mfem = load('Mass_M.dat');
 
 % Pre-ploteo de la parte.
-% pre = 1;
-% ElementVisualization;
+%pre = 1;
+%ElementVisualization;
 
 % Detecting the nodes on the interfaces...
 
@@ -261,7 +261,7 @@ switch modecal
 % 4. Calcular los desplazamientos de los nodos internos.
 % 5. Reordenar el vector resultante.
 
-%K = Kfem2;
+K = Kfem2;
 % 1.
 
        K(3*length(inter_p)+1:3*(length(inter_p)+length(inter_q)),:) = []; % Rows related to the interface q.
@@ -269,25 +269,25 @@ switch modecal
        
        % 2. Eliminando los grados de libertad fijos en el extremo movil.
        % Considerando solo movimientos a lo largo del eje z.
-%        for i=length(inter_p):-1:1
-%            i;
-%            K(3*i,:) = []; % Row elimination
-%            K(:,3*i) = []; % Column elimination
-%        end
+       for i=length(inter_p):-1:1
+           i;
+           K(3*i,:) = []; % Row elimination
+           K(:,3*i) = []; % Column elimination
+       end
        
       
 
        
        % Eliminando el grado de libertad en x. Con esto se dice garantiza
        % que ninguna parte del elemento se desplazará en x.
-%        for i=length(inter_p):-1:1
-%            i;
-%            K(2*i-1,:) = []; % Row elimination
-%            K(:,2*i-1) = []; % Column elimination
-%        end       
+       for i=length(inter_p):-1:1
+           i;
+           K(2*i-1,:) = []; % Row elimination
+           K(:,2*i-1) = []; % Column elimination
+       end       
 
-        %ci = 3*size(VecOrder,1) - 3*length(inter_q) - 2*length(inter_p);
-        ci = 3*length(inter_p);
+        ci = 3*size(VecOrder,1) - 3*length(inter_q) - 2*length(inter_p);
+        %ci = 3*length(inter_p);
         ii = ci+1;
         
         Kii = K(ii:end,ii:end);
@@ -295,13 +295,13 @@ switch modecal
   
         %rcount = 1;
         
-        uc = zeros(ci,1);
-        %uc = ones(ci,1);
+        %uc = zeros(ci,1);
+        uc = ones(ci,1);
         
-        for i=1:ci/3
-            uc(3*i-1,1) = 1;
-            %uc(2*i,1) = 1;
-        end
+%         for i=1:ci/3
+%             uc(3*i-1,1) = 1;
+%             %uc(2*i,1) = 1;
+%         end
         
         ui = -Kii\(Kic*uc);        
          
@@ -323,14 +323,14 @@ switch modecal
         
         uc_exp = zeros(3*(length(inter_p)+length(inter_q)),1);  % considering two sets of interface nodes.
         
-         uc_exp(1:length(uc),1) = uc_s;
+         %uc_exp(1:length(uc),1) = uc_s;
         
          
-%         for i = 1:length(inter_p)
-%             
-%             uc_exp(3*i-1,1) = uc_s(i,1);
-%             
-%         end
+        for i = 1:length(inter_p)
+            
+            uc_exp(3*i-1,1) = uc_s(i,1);
+            
+        end
          
          
          
@@ -348,7 +348,7 @@ switch modecal
             
         end
         
-        NodeFull(:,2:4) = NodeFull(:,2:4)+ u_conv;
+        NodeFull(:,2:4) = NodeFull(:,2:4) + u_conv;
         %NodeFull(:,3) = NodeFull(:,3) + u_conv(:,2);
         
         % sorting the elements of matrix containing the new position of the node.
@@ -364,99 +364,7 @@ switch modecal
         end
       
         V(:,2) = usort;
-
-        case 7
-       %% Constraint mode V7
-     
-        %K = Kfem2;
-        % 1. Eliminando los grados de libertad del extremo fijo p.
-        
-        K(1:3*length(inter_p),:) = []; % Rows related to the interface p.
-        K(:,1:3*length(inter_p)) = []; % Columns related to the interface p;
-        
-        % Elinando los grados de libertad en las direccions Y y Z.
-        
-        for i=length(inter_q):-1:1
-            i;
-            K(3*(i+length(inter_q))-1:3*(i+length(inter_q)),:) = []; % Row elimination
-            K(:,3*(i+length(inter_q))-1:3*(i+length(inter_q))) = []; % Column elimination
-        end
-        
-        ci = 3*size(VecOrder,1) - 3*length(inter_p) - 2*length(inter_q);
-        ii = ci+1;
-        
-        Kii = K(ii:end,ii:end);
-        Kci = K(ci+1:end,1:ci);
-        
-        %2. Imponiento las restricciones de movimiento del extremo movil q.
-        % Trabajando con el nodo número 5. El número de este nodo se
-        % determina por inspección del modelo en Ansys.
-             
-        uc = zeros(ci,1);
-        
-        for i=1:ci
-            uc(i,1) = 1;
-        end
-        
-%         uc = zeros(ci,1);
-%         for i = 1:length(inter_q)
-%             uc(3*i-2,1) = 1;
-%         end
-        
-         ui = -Kii\(Kci*uc);  
-        
-        % forming the full nodal pos vector
-        
-        NodeFull = zeros(length(VecOrderFinal),4);
-        
-        NodeFull(:,1) = VecOrderFinal;
-        
-        NodeFull(:,2:4) = nodes2;
-        
-        
-        
-        uc_s = uc*ScaleFactor;
-        ui_s = ui*ScaleFactor;
-        
-        % Expanding the local displacements
-        
-        uc_exp = zeros(2*3*length(inter_q),1);  % considering two sets of interface nodes.
-        for i = 1:length(inter_p)
-            
-            uc_exp(3*(i + length(inter_p))-2,1) = uc_s(i,1);
-            
-        end
-        
-        %uc_exp(length(uc)+1:end,1) = uc_s;
-        u = [uc_exp;ui_s];
-        
-        
-        
-        ucount = 1;      % Converting the list u into coordinate wise form.
-        for i=1:size(nodes,1)
-            for j = 1:3
-                u_conv(i,j) = u(ucount,1);
-                
-                ucount = ucount +1;
-            end
-            
-        end
-        
-        NodeFull(:,2:4) = NodeFull(:,2:4) + u_conv;
-        
-        % sorting the elements of matrix containing the new position of the node.
-        % It has to be in the same format of "nodes", so it can be printed.
-        
-        for i = 1:length(VecOrderFinal)
-            for j = 1:length(VecOrderFinal)
-                if i == VecOrderFinal(j,1)
-                    NodeSort(i,:) = NodeFull(j,:);
-                    usort(3*i-2:3*i,1) = u(3*j-2:3*j,1);
-                end
-            end
-        end
-        
-        V(:,7) = usort;
+   
   
 end
 
