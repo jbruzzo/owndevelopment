@@ -13,7 +13,7 @@ elems =  load('ELIST.txt');   % Esto se necesita para saber los nodos que confor
 if pre == 0    
     nodes_def(:,1) = nodes(:,1);  %No se si este paso es necesario.
     
-    scaleFact = 0.1;
+    scaleFact = 1;
     nodes_def(:,2:4) =  NodeSort(:,2:4);
 end
 

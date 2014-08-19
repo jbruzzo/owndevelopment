@@ -151,7 +151,7 @@ end
 K = Knew2;  % Rearranged stifness matrix.
 
 ScaleFactor = 0.07;
-modecal = 2;
+modecal = 7;
 
 switch modecal
     
@@ -376,13 +376,13 @@ switch modecal
         
         % Elinando los grados de libertad en las direccions Y y Z.
         
-        for i=length(inter_q):-1:1
-            i;
-            K(3*(i+length(inter_q))-1:3*(i+length(inter_q)),:) = []; % Row elimination
-            K(:,3*(i+length(inter_q))-1:3*(i+length(inter_q))) = []; % Column elimination
-        end
+%         for i=length(inter_q):-1:1
+%             i;
+%             K(3*(i+length(inter_q))-1:3*(i+length(inter_q)),:) = []; % Row elimination
+%             K(:,3*(i+length(inter_q))-1:3*(i+length(inter_q))) = []; % Column elimination
+%         end
         
-        ci = 3*size(VecOrder,1) - 3*length(inter_p) - 2*length(inter_q);
+        ci = 3*length(inter_q);
         ii = ci+1;
         
         Kii = K(ii:end,ii:end);
@@ -392,16 +392,12 @@ switch modecal
         % Trabajando con el nodo número 5. El número de este nodo se
         % determina por inspección del modelo en Ansys.
              
+
+        
         uc = zeros(ci,1);
-        
-        for i=1:ci
-            uc(i,1) = 1;
+        for i = 1:length(inter_q)
+            uc(3*i-2,1) = 1;
         end
-        
-%         uc = zeros(ci,1);
-%         for i = 1:length(inter_q)
-%             uc(3*i-2,1) = 1;
-%         end
         
          ui = -Kii\(Kci*uc);  
         
@@ -421,13 +417,13 @@ switch modecal
         % Expanding the local displacements
         
         uc_exp = zeros(2*3*length(inter_q),1);  % considering two sets of interface nodes.
-        for i = 1:length(inter_p)
-            
-            uc_exp(3*(i + length(inter_p))-2,1) = uc_s(i,1);
-            
-        end
+%         for i = 1:length(inter_p)
+%             
+%             uc_exp(3*(i + length(inter_p))-2,1) = uc_s(i,1);
+%             
+%         end
         
-        %uc_exp(length(uc)+1:end,1) = uc_s;
+        uc_exp(length(uc)+1:end,1) = uc_s;
         u = [uc_exp;ui_s];
         
         
